@@ -1,5 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
+mod word;
+
 use eframe::egui;
 use egui::*;
 
@@ -13,10 +15,20 @@ fn main() -> Result<(), eframe::Error> {
     )
 }
 
-#[derive(Default)]
 struct Content {
     text: String,
     last_key: Option<Key>,
+    word: Result<String, ()>,
+}
+
+impl Default for Content {
+    fn default() -> Self {
+        Self {
+            text: String::from(""),
+            last_key: None,
+            word: word::random_word(5)
+        }
+    }
 }
 
 impl eframe::App for Content {
@@ -39,7 +51,8 @@ impl eframe::App for Content {
                 // Debounce to ignore same key presses
                 if let Some(last_key) = self.last_key {
                     if &last_key != key {
-                        println!("diff key from last")
+                        println!("diff key from last");
+                        println!("{:?}", self.word.as_ref().unwrap());
                     }
                 } else {
                     // first key press
